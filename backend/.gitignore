@@ -4,9 +4,12 @@ __pycache__/
 *$py.class
 *.so
 .Python
+<<<<<<< HEAD
 env/
 venv/
 ENV/
+=======
+>>>>>>> c9271fd75a52c93cd4535e3bc40e00d76e6bf57e
 build/
 develop-eggs/
 dist/
@@ -23,9 +26,17 @@ wheels/
 .installed.cfg
 *.egg
 
+<<<<<<< HEAD
 # Environment
 .env
 .env.local
+=======
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+>>>>>>> c9271fd75a52c93cd4535e3bc40e00d76e6bf57e
 
 # IDE
 .vscode/
@@ -34,7 +45,49 @@ wheels/
 *.swo
 *~
 
+<<<<<<< HEAD
+=======
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+>>>>>>> c9271fd75a52c93cd4535e3bc40e00d76e6bf57e
 # OS
 .DS_Store
 Thumbs.db
 
+<<<<<<< HEAD
+=======
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Audit logs (optional - uncomment to ignore)
+# /tmp/corroboration_audit/
+
+# Uploads
+/tmp/uploads/
+
+# spaCy models (downloaded separately)
+# en_core_web_sm/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+>>>>>>> c9271fd75a52c93cd4535e3bc40e00d76e6bf57e
