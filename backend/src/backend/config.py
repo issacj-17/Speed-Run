@@ -9,11 +9,36 @@ from typing import List
 class Settings(BaseSettings):
     """Application settings."""
 
-    APP_NAME: str = "OCR & Document Parser API"
-    VERSION: str = "0.1.0"
+    APP_NAME: str = "Speed-Run AML Platform"
+    VERSION: str = "1.0.0"
 
     # CORS settings
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+
+    # Logging settings
+    LOG_LEVEL: str = "INFO"  # DEBUG, INFO, WARNING, ERROR, AUDIT
+    LOG_FILE: str = ""  # Optional: path to log file
+
+    # Database settings (PostgreSQL)
+    DATABASE_URL: str = "postgresql+asyncpg://speedrun:speedrun@localhost:5432/speedrun_aml"
+    DB_POOL_SIZE: int = 20
+    DB_MAX_OVERFLOW: int = 10
+    DB_ECHO: bool = False  # Set to True for SQL query logging
+    TESTING: bool = False  # Set to True in test environment
+
+    # Redis settings (Cache)
+    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_MAX_CONNECTIONS: int = 50
+    REDIS_SOCKET_TIMEOUT: int = 5
+    REDIS_SOCKET_CONNECT_TIMEOUT: int = 5
+    CACHE_ENABLED: bool = True
+    CACHE_DEFAULT_TTL: int = 3600  # 1 hour default
+
+    # Cache TTLs (in seconds)
+    CACHE_TTL_DOCUMENT_PARSING: int = 86400  # 24 hours
+    CACHE_TTL_OCR: int = 172800  # 48 hours
+    CACHE_TTL_IMAGE_ANALYSIS: int = 86400  # 24 hours
+    CACHE_TTL_VALIDATION: int = 43200  # 12 hours
 
     # File upload settings
     MAX_FILE_SIZE: int = 10 * 1024 * 1024  # 10MB

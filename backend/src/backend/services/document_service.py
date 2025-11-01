@@ -57,6 +57,7 @@ class DocumentService:
 
             # Extract full text as markdown
             full_text = result.document.export_to_markdown()
+            await self.save_markdown_to_file(full_text, "test.md")
 
             # Extract metadata
             metadata = DocumentMetadata(
@@ -105,6 +106,21 @@ class DocumentService:
 
         except Exception as e:
             raise Exception(f"Document parsing failed: {str(e)}")
+
+    async def save_markdown_to_file(self, markdown_text, filename):
+        """
+        Saves a given markdown text string to a .md file.
+
+        Args:
+            markdown_text (str): The markdown content as a string.
+            filename (str): The name of the file to save, including the .md extension.
+        """
+        try:
+            with open(filename, 'w', encoding='utf-8') as file:
+                file.write(markdown_text)
+            print(f"Markdown content successfully saved to {filename}")
+        except IOError as e:
+            print(f"Error saving file {filename}: {e}")
 
     async def parse_document_bytes(
         self,

@@ -34,6 +34,12 @@ class FormatValidationResult(BaseModel):
     spelling_error_count: int = Field(default=0, description="Number of spelling errors")
     issues: List[ValidationIssue] = Field(default=[], description="List of formatting issues found")
 
+    # Additional detail fields expected by tests
+    has_formatting_issues: bool = Field(default=False, description="Whether any formatting issues were found")
+    double_spacing_count: int = Field(default=0, description="Number of double spacing occurrences")
+    trailing_whitespace_count: int = Field(default=0, description="Number of lines with trailing whitespace")
+    spelling_errors: List[str] = Field(default=[], description="List of misspelled words")
+
 
 class StructureValidationResult(BaseModel):
     """Results from document structure validation."""

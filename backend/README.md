@@ -1,211 +1,570 @@
-# Julius Baer Agentic AI AML Platform - Backend
+# Speed-Run Backend
+## AML Compliance Platform - Backend Services
 
-FastAPI backend for real-time AML monitoring with AI-powered document analysis.
+**Status:** Phase 1 Database Infrastructure Complete ✅
+**Tech Stack:** FastAPI, PostgreSQL, Redis, SQLAlchemy, Docling
+**Current Progress:** 6% (Database layer complete, Redis & Logging pending)
 
-## Current Status
+---
 
-✅ **Ready to Run** - No external dependencies required!
-
-- Using **in-memory mock data** (no MongoDB needed yet)
-- Using **simulated AI responses** (no Groq API needed yet)
-- Fully functional REST API
-- CORS configured for frontend integration
-
-## Features
-
-- **Dashboard API**: Summary statistics, alerts, transaction volumes
-- **Alert Management**: Detailed alert information, remediation
-- **Transaction Analysis**: Volume trends, historical data
-- **Audit Trail**: Complete activity logging
-- **Mock AI Agents**: Simulated multi-agent analysis
-
-## Quick Start
+## 🚀 Quick Start
 
 ### Prerequisites
+- Python 3.11+
+- Docker & Docker Compose
+- PostgreSQL 15+ (via Docker)
+- Redis 7+ (via Docker)
 
-- Python 3.9+ installed
-- pip package manager
+### 1. Start Infrastructure
 
-### Installation
-
-1. Navigate to the backend directory:
 ```bash
-cd backend
+cd /Users/issacj/Desktop/hackathons/Singhacks/Speed-Run/backend
+
+# Start PostgreSQL + Redis
+docker-compose up -d
+
+# Verify services are running
+docker-compose ps
+
+# Check logs
+docker-compose logs -f
 ```
 
-2. Create a virtual environment:
+**Services Started:**
+- **PostgreSQL:** localhost:5432 (user: speedrun, password: speedrun, db: speedrun_aml)
+- **Redis:** localhost:6379
+- **pgAdmin (optional):** localhost:5050 (admin@speedrun.com / admin)
+
+### 2. Install Python Dependencies
+
 ```bash
-python -m venv venv
+# Using uv (recommended)
+uv sync
 
-# On Windows:
-venv\Scripts\activate
-
-# On Mac/Linux:
-source venv/bin/activate
-```
-
-3. Install dependencies:
-```bash
+# Or using pip
 pip install -r requirements.txt
+
+# Install additional dependencies for Phase 1
+pip install alembic redis[hiredis] structlog python-json-logger
 ```
 
-4. Run the server:
+### 3. Run Backend Server
+
 ```bash
-python main.py
+# Using uv
+uv run uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+
+# Or using python
+python -m backend.main
 ```
 
-Or using uvicorn directly:
-```bash
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
-```
+**API Available At:**
+- **API:** http://localhost:8000
+- **Swagger Docs:** http://localhost:8000/docs
+- **ReDoc:** http://localhost:8000/redoc
 
-5. Open your browser:
-- API: http://localhost:8000
-- Interactive Docs: http://localhost:8000/docs
-- Alternative Docs: http://localhost:8000/redoc
+---
 
-## API Endpoints
-
-### Alerts
-
-- `GET /api/alerts/summary` - Dashboard KPIs and statistics
-- `GET /api/alerts/active` - List of active alerts
-- `GET /api/alerts/{alert_id}` - Detailed alert information
-- `POST /api/alerts/{alert_id}/remediate` - Mark alert as remediated
-
-### Transactions
-
-- `GET /api/transactions/volume` - Transaction volume trend
-- `GET /api/transactions/history/{client_id}` - Client transaction history
-
-### Audit
-
-- `GET /api/audit-trail/{alert_id}` - Audit trail for specific alert
-
-### System
-
-- `GET /` - API information
-- `GET /health` - Health check
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 backend/
-├── main.py                      # FastAPI application entry point
-├── config.py                    # Configuration settings
-├── requirements.txt             # Python dependencies
-├── models/
-│   └── schemas.py              # Pydantic models
-├── services/
-│   ├── database.py             # Database service (mock)
-│   └── mock_data.py            # Mock data for development
-└── api/
-    └── routes/
-        ├── alerts.py           # Alert endpoints
-        ├── transactions.py     # Transaction endpoints
-        └── audit.py            # Audit trail endpoints
+├── database/                    # ✅ Database layer (NEW - Phase 1)
+│   ├── models.py               # 10 SQLAlchemy ORM models (650 lines)
+│   ├── connection.py           # Async connection pooling (150 lines)
+│   ├── session.py              # Session management (110 lines)
+│   ├── schema.sql              # Raw SQL schema (345 lines)
+│   └── __init__.py
+│
+├── cache/                       # ⏸️ Redis cache layer (TODO - Phase 1)
+│   ├── redis_client.py
+│   ├── cache_decorator.py
+│   └── cache_keys.py
+│
+├── logging/                     # ⏸️ Structured logging (TODO - Phase 1)
+│   ├── config.py
+│   ├── audit_logger.py
+│   └── formatters.py
+│
+├── src/backend/
+│   ├── adapters/                # ⏸️ 3rd party service adapters (TODO - Phase 2)
+│   │   ├── document_parser/    # Docling adapter
+│   │   ├── nlp/                # spaCy adapter
+│   │   └── image/              # PIL adapter
+│   │
+│   ├── routers/                 # API endpoints
+│   │   ├── ocr.py              # ✅ OCR endpoints
+│   │   ├── document_parser.py  # ✅ Document parsing endpoints
+│   │   ├── corroboration.py    # ✅ Document corroboration
+│   │   └── alerts.py           # ⏸️ Alert management (TODO - Phase 5)
+│   │
+│   ├── services/                # Business logic
+│   │   ├── ocr_service.py              # ✅ OCR (106 lines)
+│   │   ├── document_service.py         # ✅ Document parsing (170 lines)
+│   │   ├── document_validator.py       # ✅ Validation (301 lines)
+│   │   ├── image_analyzer.py           # ✅ Image forensics (462 lines)
+│   │   ├── risk_scorer.py              # ✅ Risk scoring (453 lines)
+│   │   ├── report_generator.py         # ✅ Reporting (331 lines)
+│   │   └── corroboration_service.py    # ✅ Orchestrator (230 lines)
+│   │
+│   ├── schemas/                 # Pydantic models
+│   │   ├── ocr.py
+│   │   ├── document.py
+│   │   └── validation.py
+│   │
+│   ├── config.py                # ✅ Configuration (UPDATED with DB & Redis)
+│   └── main.py                  # FastAPI app
+│
+├── docker-compose.yml           # ✅ Infrastructure setup (NEW)
+├── requirements.txt
+└── README.md                    # This file
 ```
 
-## Testing the API
+**Legend:** ✅ Complete | ⏸️ Pending | 🔄 In Progress
 
-### Using curl
+---
+
+## 🗄️ Database Models (10 Tables - Complete ✅)
+
+### Core Entities
+
+1. **clients** - Client profiles and KYC information
+   - Risk rating, KYC status, PEP/sanctions flags
+   - Relationship manager assignment
+
+2. **documents** - Document metadata and storage
+   - File references, processing status
+   - OCR/parsing results, client relationship
+
+3. **document_validations** - Validation results
+   - Format validation (spacing, fonts, spelling)
+   - Structure validation (templates, sections)
+   - Content validation (PII, quality)
+
+4. **images** - Image forensic analysis
+   - AI-generated detection, tampering detection
+   - EXIF metadata, forensic analysis
+   - Risk scoring per image
+
+5. **risk_scores** - Risk calculations
+   - Weighted component scoring
+   - Risk level classification (LOW/MEDIUM/HIGH/CRITICAL)
+   - Contributing factors and recommendations
+
+### Compliance & Workflow
+
+6. **alerts** - Compliance alerts
+   - Alert type, severity, lifecycle status
+   - SLA management, resolution tracking
+   - Links to clients, documents, transactions
+
+7. **alert_recipients** - Alert routing
+   - User assignment, role-based routing
+   - Notification and acknowledgment tracking
+
+8. **transactions** - AML Monitoring (Part 1 placeholder)
+   - Transaction details, screening flags
+   - Counterparty info, SWIFT data
+
+9. **audit_logs** - Immutable compliance log
+   - All system activities, user actions
+   - State changes, IP tracking, event correlation
+
+10. **reports** - Generated reports
+    - Report metadata, content (JSONB)
+    - Export paths (PDF, Markdown, JSON)
+
+**Features:**
+- 20+ indexes for performance
+- Connection pooling (20 connections, 10 overflow)
+- JSONB columns for flexibility
+- Timestamp tracking, audit trails
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create `.env` file in `backend/` directory:
 
 ```bash
-# Get dashboard summary
-curl http://localhost:8000/api/alerts/summary
+# Database (PostgreSQL)
+DATABASE_URL=postgresql+asyncpg://speedrun:speedrun@localhost:5432/speedrun_aml
+DB_POOL_SIZE=20
+DB_MAX_OVERFLOW=10
+DB_ECHO=False  # Set to True for SQL query logging
 
-# Get active alerts
-curl http://localhost:8000/api/alerts/active
+# Redis Cache
+REDIS_URL=redis://localhost:6379/0
+REDIS_MAX_CONNECTIONS=50
+CACHE_ENABLED=True
+CACHE_DEFAULT_TTL=3600  # 1 hour
 
-# Get specific alert details
-curl http://localhost:8000/api/alerts/ALT-788
+# Cache TTLs (seconds)
+CACHE_TTL_DOCUMENT_PARSING=86400    # 24 hours
+CACHE_TTL_OCR=172800                # 48 hours
+CACHE_TTL_IMAGE_ANALYSIS=86400      # 24 hours
+CACHE_TTL_VALIDATION=43200          # 12 hours
 
-# Get transaction volume
-curl http://localhost:8000/api/transactions/volume
+# Application
+APP_NAME=Speed-Run AML Platform
+VERSION=1.0.0
+MAX_FILE_SIZE=10485760  # 10MB
+
+# CORS
+ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+
+# Logging
+LOG_LEVEL=INFO
+
+# External APIs (optional - for image reverse search)
+GOOGLE_VISION_API_KEY=your-key-here
+TINEYE_API_KEY=your-key-here
+TINEYE_API_SECRET=your-secret-here
 ```
 
-### Using the Interactive Docs
+---
 
-Visit http://localhost:8000/docs to use the built-in Swagger UI for testing all endpoints.
-
-## Connecting to Frontend
-
-The backend is configured to accept requests from `http://localhost:3000` by default.
-
-To test with the frontend:
-
-1. Start the backend: `python main.py` (runs on port 8000)
-2. Start the frontend: `cd frontend && npm run dev` (runs on port 3000)
-3. Frontend will automatically connect to the backend API
-
-## Next Steps: Adding Real Services
-
-### 1. MongoDB Integration
-
-When ready to add MongoDB:
+## 🐳 Docker Commands
 
 ```bash
-# Install MongoDB dependencies
-pip install motor pymongo
+# Start all services
+docker-compose up -d
 
-# Update .env file
-MONGODB_URL=mongodb://localhost:27017
-DATABASE_NAME=julius_baer_aml
+# Stop all services
+docker-compose down
+
+# View logs
+docker-compose logs -f postgres
+docker-compose logs -f redis
+
+# Restart specific service
+docker-compose restart postgres
+
+# Rebuild containers
+docker-compose up -d --build
+
+# Remove volumes (clean slate - deletes data!)
+docker-compose down -v
+
+# Start with admin tools (pgAdmin, Redis Commander)
+docker-compose --profile tools up -d
 ```
 
-Then uncomment the MongoDB code in `services/database.py`
+---
 
-### 2. Groq API Integration
+## 💾 Database Management
 
-When ready to add Groq AI:
+### Access PostgreSQL
 
 ```bash
-# Install Groq
-pip install groq
+# Method 1: Via Docker
+docker exec -it speedrun-postgres psql -U speedrun -d speedrun_aml
 
-# Update .env file
-GROQ_API_KEY=your_actual_groq_api_key
+# Method 2: Local psql
+psql -U speedrun -d speedrun_aml -h localhost
+
+# Common commands inside psql:
+\dt                         # List all tables
+\d clients                  # Describe clients table
+\d+ documents               # Detailed table description
+SELECT * FROM clients LIMIT 5;
+\q                          # Quit
 ```
 
-Create agent files in `agents/` directory for real AI analysis.
-
-### 3. WebSocket Support
-
-For real-time alerts:
+### Use pgAdmin (GUI)
 
 ```bash
-pip install websockets
+# Start pgAdmin
+docker-compose --profile tools up -d pgadmin
+
+# Access in browser
+open http://localhost:5050
+
+# Login credentials
+# Email: admin@speedrun.com
+# Password: admin
+
+# Add server in pgAdmin:
+# Host: host.docker.internal (Mac) or postgres (Linux)
+# Port: 5432
+# Username: speedrun
+# Password: speedrun
+# Database: speedrun_aml
 ```
 
-Add WebSocket endpoint in `main.py` for live updates.
+### Database Migrations with Alembic
 
-## Environment Variables
+```bash
+# 1. Initialize Alembic (only once)
+alembic init alembic
 
-Create a `.env` file (optional for now):
+# 2. Edit alembic.ini - set:
+# sqlalchemy.url = postgresql+asyncpg://speedrun:speedrun@localhost:5432/speedrun_aml
 
-```env
-CORS_ORIGINS=http://localhost:3000
+# 3. Edit alembic/env.py - import models:
+# from database.models import Base
+# target_metadata = Base.metadata
+
+# 4. Create initial migration
+alembic revision --autogenerate -m "Initial schema"
+
+# 5. Apply migrations
+alembic upgrade head
+
+# 6. Check current version
+alembic current
+
+# 7. Rollback one version
+alembic downgrade -1
+
+# 8. Show migration history
+alembic history
 ```
 
-## Development Tips
+---
 
-- The API auto-reloads when you make changes (using `--reload` flag)
-- Check logs in the terminal for debugging
-- Use `/docs` endpoint to explore and test all APIs
-- Mock data is defined in `services/mock_data.py` - customize as needed
+## 📡 API Endpoints
 
-## Production Deployment
+### Current Endpoints (✅ Working)
 
-When ready for production:
+#### OCR
+```http
+POST   /api/v1/ocr/extract              # Extract text from image
+GET    /api/v1/ocr/health               # Health check
+```
 
-1. Add MongoDB connection
-2. Add Groq API integration
-3. Add authentication/authorization
-4. Configure environment variables
-5. Use production ASGI server (Gunicorn + Uvicorn)
-6. Set up proper logging and monitoring
+#### Document Parsing
+```http
+POST   /api/v1/documents/parse          # Parse document (PDF, DOCX)
+POST   /api/v1/documents/extract-tables # Extract tables from document
+GET    /api/v1/documents/health         # Health check
+```
 
-## License
+#### Document Corroboration (Part 2 - Complete)
+```http
+POST   /api/v1/corroboration/analyze              # Full document analysis
+POST   /api/v1/corroboration/analyze-image        # Image-only analysis
+POST   /api/v1/corroboration/validate-format     # Quick format check
+POST   /api/v1/corroboration/validate-structure  # Quick structure check
+GET    /api/v1/corroboration/report/{id}         # Get report by ID
+GET    /api/v1/corroboration/report/{id}/markdown # Export report as Markdown
+GET    /api/v1/corroboration/reports             # List all reports
+GET    /api/v1/corroboration/health              # Health check
+```
 
-Proprietary - Julius Baer
+### New Endpoints (⏸️ TODO - Phase 5)
 
+#### Alert Management (Part 3 Integration)
+```http
+GET    /api/v1/alerts/summary           # Dashboard statistics
+GET    /api/v1/alerts/active            # List active alerts
+GET    /api/v1/alerts/{id}              # Alert details
+POST   /api/v1/alerts/{id}/remediate    # Take remediation action
+GET    /api/v1/alerts/{id}/audit-trail  # Get audit log for alert
+POST   /api/v1/documents/upload         # Upload document with client_id
+GET    /api/v1/clients/{id}/risk-overview # Complete client risk view
+```
+
+---
+
+## 🧪 Development
+
+### Run Tests
+
+```bash
+# Install pytest
+pip install pytest pytest-cov pytest-asyncio
+
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=backend --cov-report=html
+
+# Run specific test file
+pytest tests/test_document_service.py
+
+# Run specific test
+pytest tests/test_document_service.py::test_parse_pdf
+```
+
+### Code Quality
+
+```bash
+# Format code (Ruff)
+ruff format .
+
+# Lint code
+ruff check .
+
+# Fix auto-fixable issues
+ruff check . --fix
+
+# Type checking (MyPy)
+mypy backend
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Database Connection Issues
+
+```bash
+# 1. Check if PostgreSQL is running
+docker-compose ps postgres
+# Should show: Up
+
+# 2. Check PostgreSQL logs
+docker-compose logs postgres | tail -50
+
+# 3. Test connection
+docker exec -it speedrun-postgres psql -U speedrun -d speedrun_aml -c "SELECT 1"
+# Should return: 1
+
+# 4. Check port availability
+lsof -i :5432
+# Should show docker-proxy
+
+# 5. Reset database (WARNING: deletes all data)
+docker-compose down -v
+docker-compose up -d
+```
+
+### Redis Connection Issues
+
+```bash
+# 1. Check if Redis is running
+docker-compose ps redis
+# Should show: Up
+
+# 2. Test Redis connection
+docker exec -it speedrun-redis redis-cli ping
+# Should return: PONG
+
+# 3. Check Redis data
+docker exec -it speedrun-redis redis-cli
+> KEYS *
+> INFO
+> EXIT
+```
+
+### Port Already in Use
+
+```bash
+# Find and kill process using port
+lsof -i :5432   # PostgreSQL
+lsof -i :6379   # Redis
+lsof -i :8000   # FastAPI
+
+# Kill process
+kill -9 <PID>
+
+# Or change port in docker-compose.yml
+```
+
+### Container Issues
+
+```bash
+# Remove all containers and start fresh
+docker-compose down
+docker-compose rm -f
+docker volume prune
+docker-compose up -d --build
+```
+
+---
+
+## 📚 Documentation
+
+### Main Documents
+
+| Document | Purpose | Status |
+|----------|---------|--------|
+| `README.md` | Quick start & reference (this file) | ✅ |
+| `REFACTORING_SUMMARY.md` | What's complete & next steps | ✅ |
+| `REFACTORING_IMPLEMENTATION_GUIDE.md` | Detailed code examples for continuing | ✅ |
+| `REFACTORING_PROGRESS.md` | Living memory tracker | 🔄 Updated |
+| `database/schema.sql` | Raw SQL schema | ✅ |
+
+### Requirement Documents
+
+| Document | Purpose | Status |
+|----------|---------|--------|
+| `PART_1_REAL_TIME_AML_MONITORING.md` | Part 1 detailed specs | ✅ |
+| `PART_2_DOCUMENT_IMAGE_CORROBORATION.md` | Part 2 detailed specs | ✅ |
+| `PART_3_INTEGRATION_UNIFIED_PLATFORM.md` | Integration architecture | ✅ |
+| `COMPLETION_STATUS_TRACKER.md` | Current implementation status | ✅ |
+
+---
+
+## ⏭️ Next Steps
+
+### Phase 1 Remaining (67% pending)
+
+**Task 1.2: Redis Cache Layer** (4-6 hours)
+- [ ] Create `cache/redis_client.py`
+- [ ] Create `cache/cache_decorator.py`
+- [ ] Create `cache/cache_keys.py`
+- [ ] Apply @cached decorator to expensive operations
+
+**Task 1.3: Logging & Audit Trail** (4-6 hours)
+- [ ] Create `logging/config.py` with structlog
+- [ ] Create `logging/audit_logger.py` for compliance
+- [ ] Create `middleware/logging_middleware.py` for requests
+- [ ] Update main.py to use logging
+
+**See:** `REFACTORING_IMPLEMENTATION_GUIDE.md` for complete code examples
+
+### Phase 2: Adapter Pattern (Week 2)
+- [ ] Create adapters for Docling, spaCy, PIL
+- [ ] Implement dependency injection container
+- [ ] Refactor services to use adapters
+
+### Phase 3-6: Service Refactoring, Performance, APIs, Testing
+
+**See:** `REFACTORING_SUMMARY.md` for complete roadmap
+
+---
+
+## 🤝 Contributing
+
+### Before Making Changes
+
+1. Read `REFACTORING_SUMMARY.md` for context
+2. Update `REFACTORING_PROGRESS.md` with your plans
+3. Follow SOLID principles
+4. Write tests for new code
+5. Update documentation
+
+### Code Style
+
+- Follow PEP 8
+- Use type hints everywhere
+- Write comprehensive docstrings
+- Add comments for complex logic
+- Keep functions small and focused
+
+---
+
+## 📊 Current Status
+
+**Phase 1: Infrastructure Setup**
+- ✅ Database layer complete (33%)
+- ⏸️ Redis cache pending (33%)
+- ⏸️ Logging system pending (33%)
+
+**Overall Progress:** 6% (Phase 1: 33% complete)
+
+**Next Task:** Implement Redis cache layer
+
+**Timeline:** 6 weeks to complete all refactoring phases
+
+---
+
+**Created:** 2025-01-15
+**Last Updated:** 2025-01-15
+**Status:** Phase 1 Database Complete, Redis & Logging Pending
+**Maintainer:** Speed-Run Team

@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-8.4.2, pluggy-1.6.0 -- /Users/issacj/Desktop/hackathons/Singhacks/Speed-Run/backend/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /Users/issacj/Desktop/hackathons/Singhacks/Speed-Run/backend
+configfile: pytest.ini
+plugins: asyncio-1.2.0, anyio-4.11.0, timeout-2.4.0, Faker-37.12.0, cov-7.0.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+timeout: 300.0s
+timeout method: signal
+timeout func_only: False
+collecting ... collected 188 items / 1 error
+
+=========================== short test summary info ============================
+ERROR tests/unit/adapters/test_nlp_processor.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+========================= 4 warnings, 1 error in 4.70s =========================

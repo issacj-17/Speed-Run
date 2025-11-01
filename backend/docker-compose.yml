@@ -1,0 +1,87 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: speedrun-postgres
+    environment:
+      POSTGRES_DB: speedrun_aml
+      POSTGRES_USER: speedrun
+      POSTGRES_PASSWORD: speedrun
+      POSTGRES_INITDB_ARGS: "-E UTF8"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U speedrun -d speedrun_aml"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - speedrun-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: speedrun-redis
+    command: redis-server --maxmemory 2gb --maxmemory-policy allkeys-lru --save 60 1 --loglevel warning
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - speedrun-network
+
+  # Optional: PostgreSQL Admin UI (pgAdmin)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: speedrun-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@speedrun.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - speedrun-network
+    profiles:
+      - tools  # Only start with --profile tools
+
+  # Optional: Redis Commander (Redis UI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: speedrun-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - speedrun-network
+    profiles:
+      - tools  # Only start with --profile tools
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+
+networks:
+  speedrun-network:
+    driver: bridge
