@@ -1,0 +1,37 @@
+# FastAPI and server
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+python-multipart==0.0.12
+
+# Pydantic
+pydantic==2.9.2
+pydantic-settings==2.6.0
+
+# Docling for OCR and document parsing
+docling==2.9.1
+
+# Additional dependencies for document processing
+Pillow==10.4.0
+PyPDF2==3.0.1
+python-docx==1.1.2
+
+# NLP and text analysis
+spacy==3.7.2
+# Run: python -m spacy download en_core_web_sm
+
+# Image analysis and forensics
+numpy==1.26.4
+scipy==1.11.4
+imagehash==4.3.1
+
+# HTTP requests (for external APIs)
+requests==2.31.0
+httpx==0.25.2
+
+# Optional: For enhanced OCR capabilities
+# pytesseract==0.3.10
+# easyocr==1.7.1
+
+# Optional: For advanced ML-based AI detection
+# torch==2.1.2
+# transformers==4.36.2

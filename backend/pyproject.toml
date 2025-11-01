@@ -1,0 +1,33 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "FastAPI backend for OCR and document parsing using Docling"
+readme = "README.md"
+authors = [
+    { name = "issacj-17", email = "68261814+issacj-17@users.noreply.github.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.12",
+    "pydantic>=2.9.2",
+    "pydantic-settings>=2.6.0",
+    "docling>=2.9.1",
+    "Pillow>=10.4.0",
+    "PyPDF2>=3.0.1",
+    "python-docx>=1.1.2",
+    "spacy>=3.7.2",
+    "numpy>=1.26.4",
+    "scipy>=1.11.4",
+    "imagehash>=4.3.1",
+    "requests>=2.31.0",
+    "httpx>=0.25.2",
+]
+
+[project.scripts]
+backend = "backend:main"
+
+[build-system]
+requires = ["uv_build>=0.9.2,<0.10.0"]
+build-backend = "uv_build"
