@@ -1,36 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Julius Baer Agentic AI AML Platform - Frontend
+
+A modern Next.js application for real-time AML monitoring and document corroboration with AI-powered analysis.
+
+## Features
+
+- **Real-Time AML Monitoring Dashboard**
+  - KPI cards showing active alerts, critical cases, and resolution times
+  - Interactive charts for risk visualization
+  - Alert triage queue with detailed information
+
+- **Investigation Cockpit**
+  - Detailed transaction analysis
+  - AI-powered document forensics
+  - Multi-agent findings (Regulatory Watcher, Transaction Analyst, Document Forensics)
+  - Historical transaction context
+  - Audit trail management
+
+## Tech Stack
+
+- **Next.js 14** - React framework with App Router
+- **TypeScript** - Type-safe development
+- **TailwindCSS** - Utility-first styling
+- **shadcn/ui** - High-quality React components
+- **Recharts** - Data visualization
+- **React Query** - Data fetching and caching
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
+- Node.js 18+ installed
+- npm or yarn package manager
+
+### Installation
+
+1. Navigate to the frontend directory:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cd frontend
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Create environment variables:
+```bash
+# .env.local is already created with default values
+# Update if needed:
+NEXT_PUBLIC_API_URL=http://localhost:8000
+NEXT_PUBLIC_WS_URL=ws://localhost:8000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Run the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open your browser and navigate to:
+```
+http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Build for Production
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+npm start
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project Structure
 
-## Deploy on Vercel
+```
+frontend/
+├── app/
+│   ├── page.tsx                          # Main dashboard
+│   ├── investigation/[alertId]/page.tsx  # Investigation cockpit
+│   ├── layout.tsx                        # Root layout
+│   ├── providers.tsx                     # React Query provider
+│   └── globals.css                       # Global styles
+├── components/
+│   ├── dashboard/
+│   │   ├── AlertBanner.tsx              # Critical alert banner
+│   │   ├── KPICard.tsx                  # KPI metric cards
+│   │   └── AlertTriageTable.tsx         # Alert table
+│   ├── investigation/
+│   │   ├── TransactionDetails.tsx       # Transaction info panel
+│   │   ├── DocumentViewer.tsx           # Document forensics viewer
+│   │   ├── AgentFindings.tsx            # AI agent findings
+│   │   └── HistoricalContext.tsx        # Transaction history chart
+│   ├── charts/
+│   │   ├── PieChart.tsx                 # Pie chart component
+│   │   └── LineChart.tsx                # Line chart component
+│   └── ui/                              # shadcn/ui components
+├── lib/
+│   ├── api.ts                           # API client and types
+│   ├── mock-data.ts                     # Mock data for development
+│   └── utils.ts                         # Utility functions
+└── types/
+    └── index.ts                         # TypeScript type definitions
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Key Pages
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Dashboard (`/`)
+- Overview of all active AML alerts
+- KPI metrics and trends
+- Risk level distribution
+- Transaction volume trends
+- Alert triage queue
+
+### Investigation Cockpit (`/investigation/[alertId]`)
+- Detailed alert investigation
+- Transaction details and risk scoring
+- AI-powered document analysis
+- Multi-agent findings
+- Historical transaction context
+- Remediation actions
+
+## Mock Data
+
+The application currently uses mock data for development. When the backend is ready:
+
+1. Update the API client in `lib/api.ts` to use real endpoints
+2. Replace mock data imports with actual API calls using React Query
+3. Configure WebSocket connections for real-time updates
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_API_URL` | Backend API URL | `http://localhost:8000` |
+| `NEXT_PUBLIC_WS_URL` | WebSocket URL | `ws://localhost:8000` |
+
+## Development Notes
+
+- The application uses mock data by default
+- All components are built with TypeScript for type safety
+- Charts are responsive and interactive
+- The UI follows Julius Baer's professional banking aesthetic
+- Components are modular and reusable
+
+## Next Steps
+
+1. **Backend Integration**: Connect to FastAPI backend when ready
+2. **Real-Time Features**: Implement WebSocket connections for live updates
+3. **Authentication**: Add user authentication and role-based access
+4. **Testing**: Add unit and integration tests
+5. **Performance**: Optimize with React Server Components where applicable
+
+## License
+
+Proprietary - Julius Baer
