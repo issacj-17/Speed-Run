@@ -17,6 +17,7 @@ import { ArrowLeft, Users, AlertTriangle, FileText, Upload, Search } from "lucid
 import { mockClients } from "@/lib/mock-data";
 import LeadTimeRecommendation from "@/components/rm/LeadTimeRecommendation";
 import PriorityClientsWidget from "@/components/rm/PriorityClientsWidget";
+import DocumentUpload from "@/components/rm/DocumentUpload";
 
 export default function RMDashboard() {
   const router = useRouter();
@@ -182,29 +183,9 @@ export default function RMDashboard() {
         </div>
 
         {/* Document Upload Section */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Upload className="h-5 w-5" />
-              Upload Client Documents
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-green-500 transition-colors">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <div className="text-sm text-gray-600 mb-4">
-                <p className="font-medium mb-1">Click to upload or drag and drop</p>
-                <p className="text-xs">PDF, JPG, PNG up to 10MB</p>
-              </div>
-              <Button className="bg-green-600 hover:bg-green-700">
-                Select Files
-              </Button>
-            </div>
-            <div className="mt-4 text-xs text-gray-500">
-              <p>Supported document types: Passport, ID Card, Proof of Address, Bank Statements, Tax Documents</p>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mb-6">
+          <DocumentUpload clients={mockClients} />
+        </div>
 
         {/* Client List */}
         <Card>

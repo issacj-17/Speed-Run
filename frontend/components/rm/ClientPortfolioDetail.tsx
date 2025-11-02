@@ -19,6 +19,7 @@ import TransactionHistory from "./TransactionHistory";
 import AdverseMediaFeed from "./AdverseMediaFeed";
 import ComplianceStatus from "./ComplianceStatus";
 import SmartRecommendations from "./SmartRecommendations";
+import ClientDocuments from "./ClientDocuments";
 import { generateRecommendations } from "@/lib/recommendation-engine";
 
 const portfolioData = [
@@ -90,6 +91,7 @@ export default function ClientPortfolioDetail({ client }: { client: any }) {
         </Card>
         <TransactionHistory transactions={client.transactionHistory} />
         <AdverseMediaFeed media={client.adverseMedia} />
+        <ClientDocuments clientId={client.client_id} />
       </div>
 
       {/* Right Column */}
