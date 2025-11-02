@@ -1,4 +1,4 @@
-// File: C:\Users\tanyi\Downloads\Speed-Run-1\frontend\app\layout.tsx
+// File: /Users/issacj/Desktop/hackathons/Singhacks/Speed-Run/frontend/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

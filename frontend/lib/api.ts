@@ -3,15 +3,15 @@
 // ============================================
 
 import { logger } from './logger'
+import { config, getApiUrl } from './config'
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000'
-const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION || 'v1'
-const API_BASE = `${BACKEND_URL}/api/${API_VERSION}`
+const { BACKEND_URL, API_VERSION, BASE_URL: API_BASE } = config.api
 
 // Log API configuration
 logger.info('API', 'API client initialized', {
   backendUrl: BACKEND_URL,
   apiVersion: API_VERSION,
+  useBackendApi: config.features.USE_BACKEND_API,
 })
 
 // ============================================

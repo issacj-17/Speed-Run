@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { KanbanBoardDnD } from "@/components/compliance/KanbanBoardDnD";
 import { DocumentUploadAnalysis } from "@/components/compliance/DocumentUploadAnalysis";
-import { ArrowLeft, AlertTriangle, FileWarning, Clock, TrendingUp } from "lucide-react";
+import { ArrowLeft, AlertTriangle, FileWarning, Clock, TrendingUp, Loader2 } from "lucide-react";
+import { useActiveAlerts, useDashboardSummary } from "@/lib/hooks/useDocuments";
+import { config } from "@/lib/config";
 
 // Mock data for Kanban Board
 const mockKanbanCards = [
@@ -103,11 +105,47 @@ const mockKanbanCards = [
 export default function ComplianceDashboard() {
   const router = useRouter();
 
-  // Calculate summary stats from Kanban cards
-  const totalPending = mockKanbanCards.filter((r) => r.status === "new" || r.status === "review").length;
-  const criticalCases = mockKanbanCards.filter((r) => r.priority === "CRITICAL").length;
-  const totalRedFlags = mockKanbanCards.reduce((sum, r) => sum + r.red_flags_count, 0);
-  const avgLeadTime = 3.2; // Mock data
+  // Fetch data from API (if enabled)
+  const { data: alertsData, isLoading: alertsLoading, error: alertsError } = useActiveAlerts();
+  const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useDashboardSummary();
+
+  // Determine if we should use backend data or fallback to mock data
+  const useBackendData = config.features.USE_BACKEND_API && !alertsError && !summaryError;
+
+  // Use backend data if available, otherwise use mock data
+  const kanbanCards = useBackendData && alertsData?.alerts
+    ? alertsData.alerts.map(alert => ({
+        review_id: alert.alert_id,
+        client_name: alert.client_name || "Unknown Client",
+        client_id: alert.client_id || "N/A",
+        risk_score: Math.round(alert.risk_score * 100), // Convert to 0-100 scale
+        red_flags_count: alert.red_flags?.length || 0,
+        status: alert.status as "new" | "review" | "flagged" | "resolved",
+        assigned_officer: "Ana Rodriguez",
+        time_in_queue: alert.created_at ? new Date().toISOString() : "N/A",
+        priority: (alert.severity || "MEDIUM") as "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+      }))
+    : mockKanbanCards;
+
+  // Calculate summary stats
+  const totalPending = useBackendData && summaryData?.summary?.pending_reviews
+    ? summaryData.summary.pending_reviews
+    : kanbanCards.filter((r) => r.status === "new" || r.status === "review").length;
+
+  const criticalCases = useBackendData && summaryData?.summary?.critical_alerts
+    ? summaryData.summary.critical_alerts
+    : kanbanCards.filter((r) => r.priority === "CRITICAL").length;
+
+  const totalRedFlags = useBackendData && summaryData?.summary?.total_red_flags
+    ? summaryData.summary.total_red_flags
+    : kanbanCards.reduce((sum, r) => sum + r.red_flags_count, 0);
+
+  const avgLeadTime = useBackendData && summaryData?.summary?.avg_lead_time_hours
+    ? summaryData.summary.avg_lead_time_hours
+    : 3.2;
+
+  // Loading state
+  const isLoading = config.features.USE_BACKEND_API && (alertsLoading || summaryLoading);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -150,6 +188,29 @@ export default function ComplianceDashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-6">
+        {/* API Status Banner */}
+        {config.features.USE_BACKEND_API && (alertsError || summaryError) && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2 text-yellow-800">
+              <AlertTriangle className="h-5 w-5" />
+              <div>
+                <p className="font-medium">Using Demo Data</p>
+                <p className="text-sm">Backend API is unavailable. Displaying mock data for demonstration.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-3 text-blue-800">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <p className="font-medium">Loading dashboard data...</p>
+            </div>
+          </div>
+        )}
+
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card>

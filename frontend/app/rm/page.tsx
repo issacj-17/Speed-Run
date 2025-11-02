@@ -13,7 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowLeft, Users, AlertTriangle, FileText, Upload, Search } from "lucide-react";
+import { ArrowLeft, Users, AlertTriangle, FileText, Upload, Search, Loader2 } from "lucide-react";
+import { useActiveAlerts, useDashboardSummary } from "@/lib/hooks/useDocuments";
+import { config } from "@/lib/config";
 
 // Mock client data
 const mockClients = [
@@ -73,6 +75,27 @@ export default function RMDashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch data from API (if enabled)
+  const { data: alertsData, isLoading: alertsLoading, error: alertsError } = useActiveAlerts();
+  const { data: summaryData, isLoading: summaryLoading, error: summaryError } = useDashboardSummary();
+
+  // Determine if we should use backend data or fallback to mock data
+  const useBackendData = config.features.USE_BACKEND_API && !alertsError && !summaryError;
+
+  // Use backend data if available, otherwise use mock data
+  const clients = useBackendData && alertsData?.alerts
+    ? alertsData.alerts.map(alert => ({
+        client_id: alert.client_id || "N/A",
+        full_name: alert.client_name || "Unknown Client",
+        account_type: "Private Banking", // Default value
+        risk_rating: alert.risk_score > 0.7 ? "high" : alert.risk_score > 0.4 ? "medium" : "low",
+        kyc_status: alert.status === "resolved" ? "approved" : alert.status === "pending" ? "pending_documents" : "under_review",
+        last_updated: alert.updated_at || alert.created_at || new Date().toISOString().split('T')[0],
+        pending_documents: alert.status === "pending" ? 1 : 0,
+        alerts: alert.red_flags?.length || 0,
+      }))
+    : mockClients;
+
   const getRiskColor = (rating: string) => {
     switch (rating) {
       case "high":
@@ -112,14 +135,25 @@ export default function RMDashboard() {
     }
   };
 
-  const filteredClients = mockClients.filter((client) =>
+  const filteredClients = clients.filter((client) =>
     client.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     client.client_id.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const totalClients = mockClients.length;
-  const pendingReviews = mockClients.filter((c) => c.kyc_status === "under_review").length;
-  const totalAlerts = mockClients.reduce((sum, c) => sum + c.alerts, 0);
+  const totalClients = useBackendData && summaryData?.summary?.total_clients
+    ? summaryData.summary.total_clients
+    : clients.length;
+
+  const pendingReviews = useBackendData && summaryData?.summary?.pending_reviews
+    ? summaryData.summary.pending_reviews
+    : clients.filter((c) => c.kyc_status === "under_review").length;
+
+  const totalAlerts = useBackendData && summaryData?.summary?.total_alerts
+    ? summaryData.summary.total_alerts
+    : clients.reduce((sum, c) => sum + c.alerts, 0);
+
+  // Loading state
+  const isLoading = config.features.USE_BACKEND_API && (alertsLoading || summaryLoading);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -162,6 +196,29 @@ export default function RMDashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-6">
+        {/* API Status Banner */}
+        {config.features.USE_BACKEND_API && (alertsError || summaryError) && (
+          <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2 text-yellow-800">
+              <AlertTriangle className="h-5 w-5" />
+              <div>
+                <p className="font-medium">Using Demo Data</p>
+                <p className="text-sm">Backend API is unavailable. Displaying mock data for demonstration.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-3 text-blue-800">
+              <Loader2 className="h-5 w-5 animate-spin" />
+              <p className="font-medium">Loading dashboard data...</p>
+            </div>
+          </div>
+        )}
+
         {/* Welcome Section */}
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Welcome back, Thomas!</h2>

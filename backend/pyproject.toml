@@ -8,21 +8,55 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    # FastAPI and server
     "fastapi>=0.115.0",
     "uvicorn[standard]>=0.32.0",
     "python-multipart>=0.0.12",
+
+    # Pydantic
     "pydantic>=2.9.2",
     "pydantic-settings>=2.6.0",
+
+    # Docling for OCR and document parsing
     "docling>=2.9.1",
+
+    # Additional dependencies for document processing
     "Pillow>=10.4.0",
     "PyPDF2>=3.0.1",
     "python-docx>=1.1.2",
+
+    # NLP and text analysis
     "spacy>=3.7.2",
+
+    # Image analysis and forensics
     "numpy>=1.26.4",
     "scipy>=1.11.4",
     "imagehash>=4.3.1",
+
+    # HTTP requests (for external APIs)
     "requests>=2.31.0",
     "httpx>=0.25.2",
+
+    # Database (PostgreSQL with async support)
+    "sqlalchemy[asyncio]>=2.0.23",
+    "asyncpg>=0.29.0",
+    "psycopg2-binary>=2.9.9",
+    "alembic>=1.13.1",
+
+    # Cache (Redis with async support)
+    "redis[hiredis]>=5.0.1",
+
+    # Logging (Structured logging for audit trails)
+    "structlog>=24.1.0",
+    "python-json-logger>=2.0.7",
+
+    # Testing
+    "pytest>=8.4.0",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "pytest-timeout>=2.4.0",
+    "pytest-mock>=3.14.0",
+    "faker>=37.0.0",
 ]
 
 [project.scripts]
