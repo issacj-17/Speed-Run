@@ -10,7 +10,7 @@ from datetime import datetime
 
 from backend.services.alert_service import AlertService
 from backend.schemas.alert import AlertStatus, AlertSeverity
-from tests.integration.conftest import build_alert_create_integration
+from .conftest import build_alert_create_integration
 
 
 # ============================================================================

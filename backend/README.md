@@ -217,6 +217,10 @@ ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
 
 # Logging
 LOG_LEVEL=INFO
+LOG_FILE=  # Optional: Set to file path for persistent logging (e.g., /var/log/speedrun.log)
+
+# Testing
+TESTING=False  # Set to True when running tests to use test database
 
 # External APIs (optional - for image reverse search)
 GOOGLE_VISION_API_KEY=your-key-here
