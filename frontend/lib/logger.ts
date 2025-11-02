@@ -29,10 +29,10 @@ class Logger {
   }
 
   private readonly emojis = {
-    DEBUG: '=',
-    INFO: '',
-    WARN: '�',
-    ERROR: 'L',
+    DEBUG: '🔍',
+    INFO: 'ℹ️',
+    WARN: '⚠️',
+    ERROR: '❌',
   }
 
   private constructor() {
@@ -75,7 +75,9 @@ class Logger {
     try {
       // Keep only the most recent logs
       const recentLogs = this.logs.slice(-this.MAX_LOGS)
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(recentLogs))
+      // Ensure proper UTF-8 encoding when stringifying
+      const jsonString = JSON.stringify(recentLogs)
+      localStorage.setItem(this.STORAGE_KEY, jsonString)
     } catch (error) {
       console.warn('Failed to save logs to storage:', error)
     }
@@ -83,12 +85,20 @@ class Logger {
 
   private log(level: LogLevel, component: string, message: string, data?: any): void {
     const timestamp = new Date().toISOString()
+
+    // Ensure all strings are valid UTF-8 by sanitizing
+    const sanitizedMessage = this.sanitizeString(message)
+    const sanitizedComponent = this.sanitizeString(component)
+
+    // Sanitize data field to ensure UTF-8 compatibility
+    const sanitizedData = data ? this.sanitizeData(data) : undefined
+
     const entry: LogEntry = {
       timestamp,
       level,
-      component,
-      message,
-      data,
+      component: sanitizedComponent,
+      message: sanitizedMessage,
+      data: sanitizedData,
     }
 
     // Add to logs array
@@ -99,6 +109,40 @@ class Logger {
 
     // Console output with colors
     this.consoleLog(entry)
+  }
+
+  private sanitizeString(str: string): string {
+    // Ensure string is valid UTF-8 by encoding/decoding
+    try {
+      const encoder = new TextEncoder()
+      const decoder = new TextDecoder('utf-8', { fatal: false })
+      const bytes = encoder.encode(str)
+      return decoder.decode(bytes)
+    } catch (error) {
+      // If sanitization fails, return original string
+      return str
+    }
+  }
+
+  private sanitizeData(data: any): any {
+    // Recursively sanitize data to ensure UTF-8 compatibility
+    try {
+      if (typeof data === 'string') {
+        return this.sanitizeString(data)
+      } else if (Array.isArray(data)) {
+        return data.map(item => this.sanitizeData(item))
+      } else if (data !== null && typeof data === 'object') {
+        const sanitized: Record<string, any> = {}
+        for (const [key, value] of Object.entries(data)) {
+          sanitized[this.sanitizeString(key)] = this.sanitizeData(value)
+        }
+        return sanitized
+      }
+      return data
+    } catch (error) {
+      // If sanitization fails, return string representation
+      return String(data)
+    }
   }
 
   private consoleLog(entry: LogEntry): void {
@@ -162,11 +206,21 @@ class Logger {
     if (typeof window === 'undefined') return
 
     const timestamp = Date.now()
-    const logsText = this.logs.map(log =>
-      `[${log.timestamp}] [${log.level}] [${log.component}] ${log.message}${log.data ? ' | Data: ' + JSON.stringify(log.data) : ''}`
-    ).join('\n')
 
-    const blob = new Blob([logsText], { type: 'text/plain' })
+    // Ensure all log entries are properly sanitized before stringifying
+    const logsText = this.logs.map(log => {
+      const dataStr = log.data
+        ? ' | Data: ' + JSON.stringify(log.data, null, 2)
+        : ''
+      return `[${log.timestamp}] [${log.level}] [${log.component}] ${log.message}${dataStr}`
+    }).join('\n')
+
+    // Add UTF-8 BOM (Byte Order Mark) to ensure proper encoding detection
+    const BOM = '\uFEFF'
+    const content = BOM + logsText
+
+    // Explicitly specify UTF-8 encoding for the blob
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url

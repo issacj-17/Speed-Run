@@ -7,6 +7,25 @@ Speed-Run is a production-ready fraud detection and document verification platfo
 
 **Status**: 95% Complete | 386 Tests Passing | Production-Ready Architecture
 
+## 🛡️ Code Quality & CI/CD Status
+
+[![Backend CI](https://img.shields.io/github/actions/workflow/status/issacj-17/Speed-Run/backend-ci.yml?branch=main&label=Backend%20CI&logo=python&logoColor=white)](https://github.com/issacj-17/Speed-Run/actions/workflows/backend-ci.yml)
+[![Frontend CI](https://img.shields.io/github/actions/workflow/status/issacj-17/Speed-Run/frontend-ci.yml?branch=main&label=Frontend%20CI&logo=react&logoColor=white)](https://github.com/issacj-17/Speed-Run/actions/workflows/frontend-ci.yml)
+[![Pre-commit Checks](https://img.shields.io/github/actions/workflow/status/issacj-17/Speed-Run/pre-commit.yml?branch=main&label=Pre-commit&logo=pre-commit&logoColor=white)](https://github.com/issacj-17/Speed-Run/actions/workflows/pre-commit.yml)
+[![Docker E2E](https://img.shields.io/github/actions/workflow/status/issacj-17/Speed-Run/docker-compose.yml?branch=main&label=Docker%20E2E&logo=docker&logoColor=white)](https://github.com/issacj-17/Speed-Run/actions/workflows/docker-compose.yml)
+
+[![codecov](https://codecov.io/gh/issacj-17/Speed-Run/branch/main/graph/badge.svg)](https://codecov.io/gh/issacj-17/Speed-Run)
+[![Python](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org)
+[![Node.js](https://img.shields.io/badge/node.js-18%2B-green?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Code style: Ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+[![Code style: Prettier](https://img.shields.io/badge/code%20style-prettier-ff69b4.svg)](https://prettier.io)
+
+**Quality Metrics**:
+- Backend: 369 unit tests | Type-checked with mypy | Security scanned with Bandit
+- Frontend: 17 unit tests | ESLint + Prettier | TypeScript strict mode
+- Pre-commit: Automated linting, formatting, type checking, and security scanning
+- E2E: Full Docker Compose integration tests
+
 ---
 
 ## 🚀 Quick Navigation by Role
