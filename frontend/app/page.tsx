@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,13 @@ export default function RoleSelectorPage() {
       <div className="max-w-4xl w-full">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white font-bold text-3xl">JB</span>
+          <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Image
+              src="/images/julius-baer-group-logo.png"
+              alt="Julius Baer Group Logo"
+              width={64}
+              height={64}
+            />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Julius Baer

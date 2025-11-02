@@ -12,6 +12,8 @@ import {
   useSensors,
   DragStartEvent,
   DragEndEvent,
+  DragOverEvent,
+  useDroppable,
 } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,6 +36,11 @@ interface KanbanCard {
 
 interface KanbanBoardDnDProps {
   cards: KanbanCard[];
+}
+
+function DroppableColumn({ id, children }: { id: string; children: React.ReactNode }) {
+  const { setNodeRef } = useDroppable({ id });
+  return <div ref={setNodeRef} className="bg-gray-100 rounded-b-lg p-3 min-h-[500px] space-y-3">{children}</div>;
 }
 
 export function KanbanBoardDnD({ cards: initialCards }: KanbanBoardDnDProps) {
@@ -66,33 +73,109 @@ export function KanbanBoardDnD({ cards: initialCards }: KanbanBoardDnDProps) {
     setActiveId(event.active.id as string);
   };
 
+  const handleDragOver = (event: DragOverEvent) => {
+    const { active, over } = event;
+    if (!over) return;
+  
+    const activeId = active.id as string;
+    const overId = over.id as string;
+  
+    const activeContainer = findContainer(activeId);
+    const overContainer = findContainer(overId);
+  
+    if (!activeContainer || !overContainer) return;
+    
+    // If dragging within the same column, let SortableContext handle it
+    if (activeContainer.id === overContainer.id) {
+      return;
+    }
+  
+    // Moving between different columns
+    setCards((prev) => {
+      const activeCard = prev.find(c => c.review_id === activeId);
+      if (!activeCard) return prev;
+      
+      // Remove from old position and update status
+      const updatedCard = { ...activeCard, status: overContainer.id as KanbanCard['status'] };
+      const filteredCards = prev.filter(c => c.review_id !== activeId);
+      
+      // Find where to insert in the new column
+      const overItems = filteredCards.filter((item) => item.status === overContainer.id);
+      const overIndex = overItems.findIndex((item) => item.review_id === overId);
+      
+      // Insert at the appropriate position
+      if (overIndex >= 0) {
+        const insertIndex = filteredCards.indexOf(overItems[overIndex]);
+        filteredCards.splice(insertIndex, 0, updatedCard);
+      } else {
+        // If dropping on empty column or at the end
+        filteredCards.push(updatedCard);
+      }
+      
+      return filteredCards;
+    });
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
 
     if (!over) return;
 
-    const activeCard = cards.find((c) => c.review_id === active.id);
-    const overColumn = columns.find((col) => col.id === over.id);
+    const activeId = active.id as string;
+    const overId = over.id as string;
 
-    if (activeCard && overColumn && activeCard.status !== overColumn.status) {
+    const activeCard = cards.find((c) => c.review_id === activeId);
+    const overContainer = findContainer(overId);
+
+    if (!activeCard || !overContainer) return;
+
+    // Check if moving to a different column
+    if (activeCard.status !== overContainer.id) {
       // If moving to resolved, show confirmation modal
-      if (overColumn.status === "resolved") {
+      if (overContainer.id === "resolved") {
         setResolveCardId(activeCard.review_id);
         setShowResolveModal(true);
+        return;
       } else {
-        // Update status immediately for other columns
-        updateCardStatus(activeCard.review_id, overColumn.status);
+        // Update status for other columns (already done in dragOver, just show notification)
+        const card = cards.find((c) => c.review_id === activeId);
+        if (card) {
+          window.alert(`✅ ${card.client_name} moved to ${overContainer.id.toUpperCase()}`);
+        }
+      }
+    } else {
+      // Reordering within the same column
+      if (activeId !== overId) {
+        setCards((items) => {
+          const activeIndex = items.findIndex(i => i.review_id === activeId);
+          const overIndex = items.findIndex(i => i.review_id === overId);
+          return arrayMove(items, activeIndex, overIndex);
+        });
       }
     }
   };
 
+  const findContainer = (id: string) => {
+    if (columns.some(col => col.id === id)) {
+      return columns.find(col => col.id === id);
+    }
+    const card = cards.find(c => c.review_id === id);
+    if (card) {
+      return columns.find(col => col.status === card.status);
+    }
+    return undefined;
+  };
+  
   const updateCardStatus = (cardId: string, newStatus: "new" | "review" | "flagged" | "resolved") => {
-    setCards((prev) =>
-      prev.map((card) =>
-        card.review_id === cardId ? { ...card, status: newStatus } : card
-      )
-    );
+    setCards((prev) => {
+      const cardIndex = prev.findIndex((card) => card.review_id === cardId);
+      if (cardIndex === -1) return prev;
+      const card = { ...prev[cardIndex], status: newStatus };
+      const newCards = [...prev];
+      newCards[cardIndex] = card;
+      return newCards;
+    });
     
     // Show success notification
     const card = cards.find((c) => c.review_id === cardId);
@@ -219,6 +302,7 @@ export function KanbanBoardDnD({ cards: initialCards }: KanbanBoardDnDProps) {
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
@@ -243,7 +327,7 @@ export function KanbanBoardDnD({ cards: initialCards }: KanbanBoardDnDProps) {
                   items={columnCards.map((c) => c.review_id)}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="bg-gray-100 rounded-b-lg p-3 min-h-[500px] space-y-3">
+                  <DroppableColumn id={column.id}>
                     {columnCards.length === 0 ? (
                       <div className="text-center py-8 text-gray-400 text-sm">
                         Drop cards here
@@ -262,7 +346,7 @@ export function KanbanBoardDnD({ cards: initialCards }: KanbanBoardDnDProps) {
                         />
                       ))
                     )}
-                  </div>
+                  </DroppableColumn>
                 </SortableContext>
               </div>
             );

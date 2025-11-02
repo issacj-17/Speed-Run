@@ -159,3 +159,107 @@ export const mockAlertDetails: AlertDetails = {
   document_url: "/sample-document.pdf",
 };
 
+export const mockClients = [
+  {
+    client_id: "CLI-456",
+    full_name: "Hans Müller",
+    account_type: "Private Banking",
+    risk_rating: "high",
+    kyc_status: "under_review",
+    last_updated: "2024-11-01",
+    pending_documents: 2,
+    alerts: 3,
+    transactionHistory: [
+      { date: "2024-10-28", description: "Incoming Wire", amount: 50000, risk: "low" },
+      { date: "2024-10-25", description: "Outgoing Wire", amount: -200000, risk: "high" },
+      { date: "2024-10-22", description: "Securities Purchase", amount: -75000, risk: "low" },
+    ],
+    adverseMedia: [
+      { source: "News Daily", headline: "Müller's Company Faces Scrutiny Over New Allegations", date: "2024-10-29" },
+    ],
+    complianceStatus: {
+      sanctions: "Clear",
+      pep: "PEP Tier 3",
+      aml: "High Risk",
+    },
+  },
+  {
+    client_id: "CLI-789",
+    full_name: "Sophie Chen",
+    account_type: "Wealth Management",
+    risk_rating: "medium",
+    kyc_status: "approved",
+    last_updated: "2024-10-28",
+    pending_documents: 0,
+    alerts: 1,
+    transactionHistory: [
+        { date: "2024-10-27", description: "Dividend Payment", amount: 15000, risk: "low" },
+    ],
+    adverseMedia: [],
+    complianceStatus: {
+        sanctions: "Clear",
+        pep: "Not a PEP",
+        aml: "Medium Risk",
+    },
+  },
+  {
+    client_id: "CLI-234",
+    full_name: "Mohammed Al-Rashid",
+    account_type: "Private Banking",
+    risk_rating: "high",
+    kyc_status: "under_review",
+    last_updated: "2024-10-30",
+    pending_documents: 1,
+    alerts: 2,
+    transactionHistory: [
+        { date: "2024-10-29", description: "Property Purchase", amount: -1500000, risk: "high" },
+    ],
+    adverseMedia: [
+        { source: "Global Finance Times", headline: "Al-Rashid Linked to Offshore Investigation", date: "2024-10-28" },
+    ],
+    complianceStatus: {
+        sanctions: "Potential Match",
+        pep: "Not a PEP",
+        aml: "High Risk",
+    },
+  },
+  {
+    client_id: "CLI-567",
+    full_name: "Emma Thompson",
+    account_type: "Investment Advisory",
+    risk_rating: "low",
+    kyc_status: "approved",
+    last_updated: "2024-10-25",
+    pending_documents: 0,
+    alerts: 0,
+    transactionHistory: [
+        { date: "2024-10-24", description: "Mutual Fund Investment", amount: -50000, risk: "low" },
+    ],
+    adverseMedia: [],
+    complianceStatus: {
+        sanctions: "Clear",
+        pep: "Not a PEP",
+        aml: "Low Risk",
+    },
+  },
+  {
+    client_id: "CLI-890",
+    full_name: "Carlos Mendoza",
+    account_type: "Private Banking",
+    risk_rating: "medium",
+    kyc_status: "pending_documents",
+    last_updated: "2024-10-29",
+    pending_documents: 3,
+    alerts: 1,
+    transactionHistory: [
+        { date: "2024-10-28", description: "Incoming International Transfer", amount: 250000, risk: "medium" },
+    ],
+    adverseMedia: [],
+    complianceStatus: {
+        sanctions: "Clear",
+        pep: "Not a PEP",
+        aml: "Medium Risk",
+    },
+  },
+];
+

@@ -14,60 +14,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowLeft, Users, AlertTriangle, FileText, Upload, Search } from "lucide-react";
-
-// Mock client data
-const mockClients = [
-  {
-    client_id: "CLI-456",
-    full_name: "Hans Müller",
-    account_type: "Private Banking",
-    risk_rating: "high",
-    kyc_status: "under_review",
-    last_updated: "2024-11-01",
-    pending_documents: 2,
-    alerts: 3,
-  },
-  {
-    client_id: "CLI-789",
-    full_name: "Sophie Chen",
-    account_type: "Wealth Management",
-    risk_rating: "medium",
-    kyc_status: "approved",
-    last_updated: "2024-10-28",
-    pending_documents: 0,
-    alerts: 1,
-  },
-  {
-    client_id: "CLI-234",
-    full_name: "Mohammed Al-Rashid",
-    account_type: "Private Banking",
-    risk_rating: "high",
-    kyc_status: "under_review",
-    last_updated: "2024-10-30",
-    pending_documents: 1,
-    alerts: 2,
-  },
-  {
-    client_id: "CLI-567",
-    full_name: "Emma Thompson",
-    account_type: "Investment Advisory",
-    risk_rating: "low",
-    kyc_status: "approved",
-    last_updated: "2024-10-25",
-    pending_documents: 0,
-    alerts: 0,
-  },
-  {
-    client_id: "CLI-890",
-    full_name: "Carlos Mendoza",
-    account_type: "Private Banking",
-    risk_rating: "medium",
-    kyc_status: "pending_documents",
-    last_updated: "2024-10-29",
-    pending_documents: 3,
-    alerts: 1,
-  },
-];
+import { mockClients } from "@/lib/mock-data";
+import LeadTimeRecommendation from "@/components/rm/LeadTimeRecommendation";
 
 export default function RMDashboard() {
   const router = useRouter();
@@ -222,6 +170,11 @@ export default function RMDashboard() {
           </Card>
         </div>
 
+        {/* Lead Time Recommendation Section */}
+        <div className="mb-6">
+          <LeadTimeRecommendation />
+        </div>
+
         {/* Document Upload Section */}
         <Card className="mb-6">
           <CardHeader>
@@ -323,7 +276,11 @@ export default function RMDashboard() {
                       {new Date(client.last_updated).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      <Button size="sm" variant="outline">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => router.push(`/rm/${client.client_id}`)}
+                      >
                         View
                       </Button>
                     </TableCell>

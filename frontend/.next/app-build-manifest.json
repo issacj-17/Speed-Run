@@ -16,15 +16,15 @@
       "static/chunks/main-app.js",
       "static/chunks/app/compliance/page.js"
     ],
-    "/compliance/review/[reviewId]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/compliance/review/[reviewId]/page.js"
-    ],
     "/rm/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/rm/page.js"
+    ],
+    "/rm/[clientId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/rm/[clientId]/page.js"
     ]
   }
 }
